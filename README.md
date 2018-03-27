@@ -1,4 +1,4 @@
-#Description
+## Description
 
 This plugin helps setting up the various header instructions included in the HTTP protocol allowing for easy improvement of your website's security.
 
@@ -21,7 +21,7 @@ As usual, make sure to understand the meaning of these options and to run full t
 
 
 &nbsp;
-#Installation
+## Installation
 
 1. Unpack the plugin archive to the `/wp-content/plugins/` folder, or manually upload its content to the `/wp-content/plugins/http-security/` folder.
 1. Activate the plugin through the "Plugins" screen in WordPress.
@@ -29,7 +29,7 @@ As usual, make sure to understand the meaning of these options and to run full t
 
 
 &nbsp;
-#Frequently Asked Questions
+## Frequently Asked Questions
 
 How can I test the plugin runs effectively?
 
