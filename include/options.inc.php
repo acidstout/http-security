@@ -103,6 +103,75 @@ $options = array(
 								)
 						)
 				),
+				'Feature-Policy' => array(
+						'id' => 'http_security_feature_policy',
+						'flag' => 'http_security_feature_policy_flag',
+						'label' => 'Enable Feature-Policy',
+						'description' => 'The HTTP Feature-Policy header provides a mechanism to allow and deny the use of browser features in its own frame, and in iframes that it embeds.',
+						'extended_description' => ' For a complete description of these parameters, please refer to <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy" rel="noopener" target="_blank">Feature-Policy</a> on the Mozilla Developer Network.',
+						'options' => array(
+								'http_security_feature_policy_autoplay' => array(
+										'label' => 'autoplay',
+										'description' => 'Controls whether the current document is allowed to autoplay media.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_camera' => array(
+										'label' => 'camera',
+										'description' => 'Controls whether the current document is allowed to use video input devices.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_document_domain' => array(
+										'label' => 'document-domain',
+										'description' => 'Controls whether the current document is allowed to set document.domain.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_encrypted_media' => array(
+										'label' => 'encrypted-media',
+										'description' => 'Controls whether the current document is allowed to use the Encrypted Media Extensions API (EME).',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_fullscreen' => array(
+										'label' => 'fullscreen',
+										'description' => 'Controls whether the current document is allowed to request switching to fullscreen.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_geolocation' => array(
+										'label' => 'geolocation',
+										'description' => 'Controls whether the current document is allowed to use the Geolocation Interface.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_microphone' => array(
+										'label' => 'microphone',
+										'description' => 'Controls whether the current document is allowed to use audio input devices.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_midi' => array(
+										'label' => 'midi',
+										'description' => 'Controls whether the current document is allowed to use the Web MIDI API.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_payment' => array(
+										'label' => 'payment',
+										'description' => 'Controls whether the current document is allowed to use the Payment Request API.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_vr' => array(
+										'label' => 'vr',
+										'description' => 'Controls whether the current document is allowed to use the WebVR API.',
+										'type' => 'text',
+										'size' => 80
+								)
+						)
+				),
 				'X-frame-options' => array(
 						'id' => 'http_security_x_frame',
 						'flag' => 'http_security_x_frame_flag',

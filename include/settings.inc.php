@@ -58,8 +58,8 @@ function http_security_options_page_html() {
 				
 				foreach ($options['general'] as $key => $value) {
 					$i = 1;
-					if ( ( !$is_multisite && ((in_array($key, array('HSTS', 'Public-Key-Pinning')) && $httpSecurity->isSecure()) || !in_array($key, array('HSTS', 'Public-Key-Pinning'))) )
-						|| ($is_multisite && in_array($key, array('HSTS', 'Other options'))) ) {
+					if ( ( !$is_multisite && ((in_array($key, array('HSTS', 'Public-Key-Pinning', 'Expect-CT')) && $httpSecurity->isSecure()) || !in_array($key, array('HSTS', 'Public-Key-Pinning', 'Expect-CT'))) )
+							|| ($is_multisite && in_array($key, array('HSTS', 'Expect-CT', 'Other options'))) ) {
 						?><h3><?php _e($key, HTTP_SECURITY_PLUGIN_NAME);?></h3><?php 
 						
 						$class = '';
@@ -75,7 +75,11 @@ function http_security_options_page_html() {
 									?><input class="flag" name="<?php echo $value['flag'];?>" type="checkbox" id="<?php echo $value['flag'];?>" value="1" <?php echo checked(1, $httpSecurity->getOption($value['flag']), false);?>/><?php
 								}
 								_e($value['label'], HTTP_SECURITY_PLUGIN_NAME);?>
-							</label></td><?php
+							</label>
+							<?php if (isset($value['extended_description']) && !empty($value['extended_description'])) {
+								?><p><?php _e($value['extended_description']);?></p><?php
+							}?>
+							</td><?php
 						}
 						
 						// Plain checkbox lists and select boxes
@@ -97,8 +101,10 @@ function http_security_options_page_html() {
 							}
 							?></table><br/><?php
 						} else {
-							// Blockquoted checkboxes, text input fields and radio buttons 
-							?><br/>
+							// Blockquoted checkboxes, text input fields and radio buttons
+							if (!isset($value['extended_description']) || empty($value['extended_description'])) {
+								?><br/><?php 
+							}?>
 							<blockquote id="<?php echo $value['id'];?>_options">
 								<table class="http-security-options"><?php 
 								foreach ($value['options'] as $entry_key => $entry_value) {
@@ -225,7 +231,7 @@ function http_security_options_page_html() {
 				
 				// HSTS
 				if ($httpSecurity->getOption('http_security_sts_flag')) {
-					$header_string .= 'Header set Strict-Transport-Security: ';
+					$header_string .= 'Header set Strict-Transport-Security: "';
 					
 					if ($httpSecurity->getOption('http_security_sts_max_age')) {
 						$header_string .= 'max-age=' . $httpSecurity->getOption('http_security_sts_max_age') . ';';
@@ -240,7 +246,7 @@ function http_security_options_page_html() {
 					}
 					
 					$header_string = $httpSecurity->removeTrail($header_string, ';');
-					$header_string .= "\n";
+					$header_string .= '"' . "\n";
 				}
 				
 				
@@ -253,7 +259,7 @@ function http_security_options_page_html() {
 							$header_string .= '-Report-Only';
 						}
 					
-						$header_string .= ': ';
+						$header_string .= ': "';
 					
 						$header_string .= $httpSecurity->getOption('http_security_pkp_keys');
 						
@@ -269,7 +275,7 @@ function http_security_options_page_html() {
 						}
 						
 						$header_string = $httpSecurity->removeTrail($header_string, ';');
-						$header_string .= '' . "\n";
+						$header_string .= '"' . "\n";
 					}
 				}
 				
@@ -307,6 +313,53 @@ function http_security_options_page_html() {
 					$header_string .= '"' . "\n";
 				}
 				
+				// Feature-Policy
+				if ($httpSecurity->getOption('http_security_feature_policy_flag')) {
+					$header_string .= 'Feature-Policy: "';
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_autoplay')) {
+						$header_string .= 'autoplay ' . $httpSecurity->getOption('http_security_feature_policy_autoplay') . '; ';
+					}
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_camera')) {
+						$header_string .= 'camera ' . $httpSecurity->getOption('http_security_feature_policy_camera') . '; ';
+					}
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_document_domain')) {
+						$header_string .= 'document-domain ' . $httpSecurity->getOption('http_security_feature_policy_document_domain') . '; ';
+					}
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_encrypted_media')) {
+						$header_string .= 'encrypted-media ' . $httpSecurity->getOption('http_security_feature_policy_encrypted_media') . '; ';
+					}
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_fullscreen')) {
+						$header_string .= 'fullscreen ' . $httpSecurity->getOption('http_security_feature_policy_fullscreen') . '; ';
+					}
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_geolocation')) {
+						$header_string .= 'geolocation ' . $httpSecurity->getOption('http_security_feature_policy_geolocation') . '; ';
+					}
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_microphone')) {
+						$header_string .= 'microphone ' . $httpSecurity->getOption('http_security_feature_policy_microphone') . '; ';
+					}
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_midi')) {
+						$header_string .= 'midi ' . $httpSecurity->getOption('http_security_feature_policy_midi') . '; ';
+					}
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_payment')) {
+						$header_string .= 'payment ' . $httpSecurity->getOption('http_security_feature_policy_payment') . '; ';
+					}
+					
+					if ($httpSecurity->getOption('http_security_feature_policy_vr')) {
+						$header_string .= 'vr ' . $httpSecurity->getOption('http_security_feature_policy_vr') . '; ';
+					}
+					
+					$header_string = $httpSecurity->removeTrail($header_string, '; ');
+					$header_string .= '"' . "\n";
+				}
 				
 				// X-Frame-Options
 				if ($httpSecurity->getOption('http_security_x_frame_flag')) {
@@ -345,7 +398,7 @@ function http_security_options_page_html() {
 				
 				?>
 				<h2 class="nav-tab-wrapper"><a href="?page=http-security&tab=general-options" class="nav-tab"><?php _e('General options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=http-security&tab=csp-options" class="nav-tab"><?php _e('CSP options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=http-security&tab=htaccess" class="nav-tab nav-tab-active"><?php _e('.htaccess', HTTP_SECURITY_PLUGIN_NAME);?></a></h2>
-				<p><?php _e('Some cache plug-ins rewrite the HTTP headers. In this case, you may need to have to insert the following content in your .htaccess file. If so, please disable the rewriting of the HTTP headers.', HTTP_SECURITY_PLUGIN_NAME);?></p>
+				<p><?php _e('Some cache plug-ins (e.g. <a href="https://wordpress.org/plugins/cache-enabler/">Cache Enabler</a>) rewrite the HTTP headers. In this case, you may need to have to insert the following content in your .htaccess file. If so, please disable the rewriting of the HTTP headers.', HTTP_SECURITY_PLUGIN_NAME);?></p>
 				<p><?php _e('Make sure to save the settings for the latest version.', HTTP_SECURITY_PLUGIN_NAME);?></p>
 				<label for="<?php echo $options['htaccess']['id'];?>" title="<?php _e($options['htaccess']['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><input name="<?php echo $options['htaccess']['id'];?>" type="checkbox" id="<?php echo $options['htaccess']['id'];?>" value="1" <?php echo $checked;?>/><?php _e($options['htaccess']['label'], HTTP_SECURITY_PLUGIN_NAME);?></label><br/>
 				<blockquote><textarea name="htaccess" id="htaccess" rows="15" cols="80" readonly <?php echo $disabled;?>><?php echo $header_string;?></textarea></blockquote><?php
@@ -358,6 +411,6 @@ function http_security_options_page_html() {
 			?><p class="http-security-warning"><span class="dashicons dashicons-warning"></span> <?php _e('You still have an administrator account with the user name security <strong>admin</strong>. This is a major security flaw, you should consider renaming this account.', HTTP_SECURITY_PLUGIN_NAME);?></p><?php
 		}?>
 	</div>
-	<link type="text/css" rel="stylesheet" href="<?php echo HTTP_SECURITY_PLUGIN_DIR;?>/css/style<?php echo (defined('WP_DEBUG') && WP_DEBUG === true) ? '' : '.min';?>.css"/>
-	<script type="text/javascript" src="<?php echo HTTP_SECURITY_PLUGIN_DIR;?>/js/options<?php echo (defined('WP_DEBUG') && WP_DEBUG === true) ? '' : '.min';?>.js"></script><?php
+	<link type="text/css" rel="stylesheet" href="<?php echo HTTP_SECURITY_PLUGIN_DIR;?>/css/style<?php echo (defined('WP_DEBUG') && WP_DEBUG === true) ? '' : '.min';?>.css?ver=<?php echo time();?>"/>
+	<script type="text/javascript" src="<?php echo HTTP_SECURITY_PLUGIN_DIR;?>/js/options<?php echo (defined('WP_DEBUG') && WP_DEBUG === true) ? '' : '.min';?>.js?ver=<?php echo time();?>"></script><?php
 }

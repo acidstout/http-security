@@ -31,7 +31,7 @@ class WPAddActionProxy {
 		$this->_class = $class;
 		$this->_func = $func;
 		$this->_tag = $tag;
-		
+
 		if (method_exists($this, $this->_func) && !empty($this->_tag)) {
 			// WP add_action() with parameters.
 			add_action($this->_tag, array(&$this, $this->_func));
@@ -313,7 +313,16 @@ class httpSecurity {
 		}
 		
 		if ($this->_header_string) {
-			header($this->_header_string);
+			
+			// Split header into array ...
+			$headers = explode('|', $this->_header_string);
+			
+			// ... to send all defined header responses. 
+			foreach ($headers as $header) {
+				if (!empty($header)) {
+					header($header);
+				}
+			}
 		}
 		
 		if ($this->_options['http_security_remove_php_version']) {
@@ -384,6 +393,7 @@ class httpSecurity {
 	private function _getSecurityHeader() {
 		$header_string = '';
 		
+		// HSTS options
 		if ($this->isSecure() && $this->_options['http_security_sts_flag']) {
 			$header_string .= 'Strict-Transport-Security:';
 			
@@ -398,9 +408,46 @@ class httpSecurity {
 			if ($this->_options['http_security_sts_preload_flag']) {
 				$header_string .= ' preload;';
 			}
+			
+			$header_string = $this->removeTrail($header_string, ';');
 		}
 		
-		if ($this->_options['http_security_expect_ct_flag']) {
+		$header_string .= '|';
+		
+		
+		// Public-Key-Pinning
+		if ($this->_options['http_security_pkp_flag']) {
+			if ($this->_options['http_security_pkp_keys']) {
+				$header_string .= 'Public-Key-Pins';
+				
+				if ($this->_options['http_security_pkp_reportonly_flag']) {
+					$header_string .= '-Report-Only';
+				}
+				
+				$header_string .= ':';
+				
+				$header_string .= $this->_options['http_security_pkp_keys'];
+				
+				if ($this->_options['http_security_pkp_maxage']) {
+					$header_string .= ' max-age=' . $this->_options['http_security_pkp_maxage'] . ';';
+				}
+				if ($this->_options['http_security_pkp_subdomains_flag']) {
+					$header_string .= ' includeSubDomains;';
+				}
+				
+				if ($this->_options['http_security_pkp_reporturi']) {
+					$header_string .= ' report-uri=\"' . $this->_options['http_security_pkp_reporturi'] . '\";';
+				}
+				
+				$header_string = $this->removeTrail($header_string, ';');
+			}
+		}
+		
+		$header_string .= '|';
+		
+		
+		// Expect-CT options
+		if ($this->isSecure() && $this->_options['http_security_expect_ct_flag']) {
 			$header_string .= 'Expect-CT:';
 			if ($this->_options['http_security_expect_ct_enforce_flag']) {
 				$header_string .= ' enforce;';
@@ -411,10 +458,16 @@ class httpSecurity {
 			}
 			
 			if ($this->_options['http_security_expect_ct_report_uri']) {
-				$header_string .= 'report-uri="' . $this->_options['http_security_expect_ct_report_uri'] . '";';
+				$header_string .= ' report-uri=' . $this->_options['http_security_expect_ct_report_uri'] . ';';
 			}
+		
+			$header_string = $this->removeTrail($header_string, ';');
 		}
 		
+		$header_string .= '|';
+		
+		
+		// Content-Security-Policy
 		if ($this->_options['http_security_csp_flag']) {
 			$header_string .= 'Content-Security-Policy';
 			if ($this->_options['http_security_csp_reportonly_flag']) {
@@ -427,30 +480,91 @@ class httpSecurity {
 			$header_string = $this->removeTrail($header_string, ';');
 		}
 		
+		$header_string .= '|';
+		
+		
+		// Feature-Policy
+		if ($this->_options['http_security_feature_policy_flag']) {
+			$header_string .= 'Feature-Policy:';
+			
+			if ($this->_options['http_security_feature_policy_autoplay']) {
+				$header_string .= ' autoplay ' . $this->_options['http_security_feature_policy_autoplay'] . ';';
+			}
+
+			if ($this->_options['http_security_feature_policy_camera']) {
+				$header_string .= ' camera ' . $this->_options['http_security_feature_policy_camera'] . ';';
+			}
+			
+			if ($this->_options['http_security_feature_policy_document_domain']) {
+				$header_string .= ' document-domain ' . $this->_options['http_security_feature_policy_document_domain'] . ';';
+			}
+			
+			if ($this->_options['http_security_feature_policy_encrypted_media']) {
+				$header_string .= ' encrypted-media ' . $this->_options['http_security_feature_policy_encrypted_media'] . ';';
+			}
+			
+			if ($this->_options['http_security_feature_policy_fullscreen']) {
+				$header_string .= ' fullscreen ' . $this->_options['http_security_feature_policy_fullscreen'] . ';';
+			}
+			
+			if ($this->_options['http_security_feature_policy_geolocation']) {
+				$header_string .= ' geolocation ' . $this->_options['http_security_feature_policy_geolocation'] . ';';
+			}
+			
+			if ($this->_options['http_security_feature_policy_microphone']) {
+				$header_string .= ' microphone ' . $this->_options['http_security_feature_policy_microphone'] . ';';
+			}
+			
+			if ($this->_options['http_security_feature_policy_midi']) {
+				$header_string .= ' midi ' . $this->_options['http_security_feature_policy_midi'] . ';';
+			}
+			
+			if ($this->_options['http_security_feature_policy_payment']) {
+				$header_string .= ' payment ' . $this->_options['http_security_feature_policy_payment'] . ';';
+			}
+			
+			if ($this->_options['http_security_feature_policy_vr']) {
+				$header_string .= ' vr ' . $this->_options['http_security_feature_policy_vr'] . ';';
+			}
+			
+			
+			$header_string = $this->removeTrail($header_string, ';');
+		}
+
+		$header_string .= '|';
+		
+		
+		// X-Frame options
 		if ($this->_options['http_security_x_frame_flag']) {
 			switch ($this->_options['http_security_x_frame_options']) {
 				case 1:
-					$header_string .= 'X-Frame-Options: DENY;';
+					$header_string .= 'X-Frame-Options: DENY';
 					break;
 				case 2:
-					$header_string .= 'X-Frame-Options: SAMEORIGIN;';
+					$header_string .= 'X-Frame-Options: SAMEORIGIN';
 					break;
 				case 3:
-					$header_string .= 'X-Frame-Options: ALLOW-FROM ' . $this->_options['http_security_x_frame_origin'] . ';';
+					$header_string .= 'X-Frame-Options: ALLOW-FROM ' . $this->_options['http_security_x_frame_origin'];
 					break;
 			}
 		}
 		
+		$header_string .= '|';
+		
 		if ($this->_options['http_security_referrer_policy']) {
-			$header_string .= 'Referrer-Policy: ' . $this->_options['http_security_referrer_policy'] . ';';
+			$header_string .= 'Referrer-Policy: ' . $this->_options['http_security_referrer_policy'] . '';
 		}
+		
+		$header_string .= '|';
 		
 		if ($this->_options['http_security_x_xss_protection']) {
-			$header_string .= 'X-XSS-Protection: 1; mode=block;';
+			$header_string .= 'X-XSS-Protection: 1; mode=block';
 		}
 		
+		$header_string .= '|';
+		
 		if ($this->_options['http_security_x_content_type_options']) {
-			$header_string .= 'X-Content-Type-Options: nosniff;';
+			$header_string .= 'X-Content-Type-Options: nosniff';
 		}
 		
 		

@@ -8,7 +8,7 @@
  * @returns void
  */
 
-jQuery(function() {
+jQuery(function($) {
 	
 	/**
 	 * Toggles the visibilty of an element in relation
@@ -17,10 +17,10 @@ jQuery(function() {
 	 * @returns false
 	 */
 	function toggleVisibility(tag) {
-		if(jQuery('input[name=' + tag + '_flag]').is(':checked')) {
-			jQuery('#' + tag + '_options').show();
+		if ($('input[name=' + tag + '_flag]').is(':checked')) {
+			$('#' + tag + '_options').show();
 		} else {
-			jQuery('#' + tag + '_options').hide();
+			$('#' + tag + '_options').hide();
 		}
 		
 		return false;
@@ -34,11 +34,11 @@ jQuery(function() {
 	 * @returns false
 	 */
 	function toggleProperty(trigger_id, toggle_id, property) {
-		if (jQuery(trigger_id).is(':checked')) {
-			jQuery(toggle_id).prop(property, false);
-			jQuery(toggle_id).removeProp(property);
+		if ($(trigger_id).is(':checked')) {
+			$(toggle_id).prop(property, false);
+			$(toggle_id).removeProp(property);
 		} else {
-			jQuery(toggle_id).prop(property, true);
+			$(toggle_id).prop(property, true);
 		}
 		
 		return false;
@@ -46,17 +46,17 @@ jQuery(function() {
 
 	
 	// Event handlers
-	jQuery('.flag').change(function() {
+	$('.flag').change(function() {
 		var id = this.id;
 		id = id.substr(0, id.indexOf('_flag'));
 		toggleVisibility(id);
 	});
 	
-	jQuery("input[name=http_security_x_frame_options]").change(function() {
+	$('input[name=http_security_x_frame_options]').change(function() {
 		toggleProperty('#http_security_x_frame_allow_from', '#http_security_x_frame_origin', 'disabled');
 	});
 
-	jQuery('#http_security_htaccess_flag').change(function() {
+	$('#http_security_htaccess_flag').change(function() {
 		toggleProperty('#http_security_htaccess_flag', '#htaccess', 'disabled');
 	});
 
@@ -65,6 +65,7 @@ jQuery(function() {
 	toggleVisibility('http_security_sts');
 	toggleVisibility('http_security_pkp');
 	toggleVisibility('http_security_expect_ct');
+	toggleVisibility('http_security_feature_policy');
 	toggleVisibility('http_security_x_frame');
 	toggleProperty('#http_security_x_frame_allow_from', '#http_security_x_frame_origin', 'disabled');
 	toggleVisibility('http_security_csp');
