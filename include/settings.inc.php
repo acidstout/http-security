@@ -315,7 +315,7 @@ function http_security_options_page_html() {
 				
 				// Feature-Policy
 				if ($httpSecurity->getOption('http_security_feature_policy_flag')) {
-					$header_string .= 'Feature-Policy: "';
+					$header_string .= 'Header set Feature-Policy: "';
 					
 					if ($httpSecurity->getOption('http_security_feature_policy_autoplay')) {
 						$header_string .= 'autoplay ' . $httpSecurity->getOption('http_security_feature_policy_autoplay') . '; ';
