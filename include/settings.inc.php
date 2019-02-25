@@ -11,7 +11,7 @@
  */
 function http_security_options_page_html() {
 	global $httpSecurity;
-	global $options;
+	global $httpSecurityOptions;
 	
 	if (!current_user_can('manage_options')) {
 		wp_die(__('You do not have sufficient permissions to access this page.', HTTP_SECURITY_PLUGIN_NAME));
@@ -45,10 +45,10 @@ function http_security_options_page_html() {
 				settings_fields(HTTP_SECURITY_PLUGIN_NAME);
 				
 				?><h2 class="nav-tab-wrapper">
-					<a href="?page=http-security&tab=general-options" class="nav-tab nav-tab-active"><?php _e('General options', HTTP_SECURITY_PLUGIN_NAME);?></a><?php 
+					<a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=general-options" class="nav-tab nav-tab-active"><?php _e('General options', HTTP_SECURITY_PLUGIN_NAME);?></a><?php 
 					if (!$is_multisite) {?>
-						<a href="?page=http-security&tab=csp-options" class="nav-tab"><?php _e('CSP options', HTTP_SECURITY_PLUGIN_NAME);?></a>
-						<a href="?page=http-security&tab=htaccess" class="nav-tab"><?php _e('.htaccess', HTTP_SECURITY_PLUGIN_NAME);?></a><?php 
+						<a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=csp-options" class="nav-tab"><?php _e('CSP options', HTTP_SECURITY_PLUGIN_NAME);?></a>
+						<a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=htaccess" class="nav-tab"><?php _e('.htaccess', HTTP_SECURITY_PLUGIN_NAME);?></a><?php 
 					}?>
 				</h2><?php
 			
@@ -56,7 +56,7 @@ function http_security_options_page_html() {
 					?><p class="http-security-warning"><span class="dashicons dashicons-warning"></span> <strong><?php _e('You are not running HTTPS.', HTTP_SECURITY_PLUGIN_NAME);?></strong></p><?php
 				}
 				
-				foreach ($options['general'] as $key => $value) {
+				foreach ($httpSecurityOptions['general'] as $key => $value) {
 					$i = 1;
 					if ( ( !$is_multisite && ((in_array($key, array('HSTS', 'Public-Key-Pinning', 'Expect-CT')) && $httpSecurity->isSecure()) || !in_array($key, array('HSTS', 'Public-Key-Pinning', 'Expect-CT'))) )
 							|| ($is_multisite && in_array($key, array('HSTS', 'Expect-CT', 'Other options'))) ) {
@@ -180,18 +180,18 @@ function http_security_options_page_html() {
 		
 			if ($active_tab == 'csp-options') {
 		
-				settings_fields('http-security-csp');
+				settings_fields(HTTP_SECURITY_PLUGIN_NAME . '-csp');
 				
-				?><h2 class="nav-tab-wrapper"><a href="?page=http-security&tab=general-options" class="nav-tab"><?php _e('General options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=http-security&tab=csp-options" class="nav-tab nav-tab-active"><?php _e('CSP options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=http-security&tab=htaccess" class="nav-tab"><?php _e('.htaccess', HTTP_SECURITY_PLUGIN_NAME);?></a></h2>
+				?><h2 class="nav-tab-wrapper"><a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=general-options" class="nav-tab"><?php _e('General options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=csp-options" class="nav-tab nav-tab-active"><?php _e('CSP options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=htaccess" class="nav-tab"><?php _e('.htaccess', HTTP_SECURITY_PLUGIN_NAME);?></a></h2>
 				<p><?php _e('For a complete description of these parameters, please refer to <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy" target="_blank" rel="noopener">Content-Security-Policy</a> on the Mozilla Developer Network.', HTTP_SECURITY_PLUGIN_NAME);?></p><?php 
 				
-				foreach ($options['csp']['flags'] as $entry) {
+				foreach ($httpSecurityOptions['csp']['flags'] as $entry) {
 					?><label for="<?php echo $entry['id']?>" title="<?php _e($entry['description'],HTTP_SECURITY_PLUGIN_NAME);?>"><input class="flag" name="<?php echo $entry['id']?>" type="checkbox" id="<?php echo $entry['id']?>" value="1" <?php echo checked(1, $httpSecurity->getOption($entry['id']), false);?>/><?php _e($entry['label'], HTTP_SECURITY_PLUGIN_NAME);?></label> <?php
 				}
 				
 				?><blockquote id="http_security_csp_options">
 					<table class="http-security-options"><?php 
-						foreach ($options['csp']['directives'] as $key => $value) {
+					foreach ($httpSecurityOptions['csp']['directives'] as $key => $value) {
 							?><tr><td colspan="2"><h3><?php _e(ucfirst($key) . ' directives', HTTP_SECURITY_PLUGIN_NAME);?></h3></td></tr><?php
 							foreach ($value as $csp_directive) {
 								$input_type = 'text';
@@ -216,7 +216,7 @@ function http_security_options_page_html() {
 		
 			if ($active_tab == 'htaccess') {
 			
-				settings_fields('http-security-htaccess');
+				settings_fields(HTTP_SECURITY_PLUGIN_NAME . '-htaccess');
 				
 				// Get status of htaccess flag and enable/disable textarea according to that status.
 				$checked = checked(1, $httpSecurity->getOption('http_security_htaccess_flag'), false);
@@ -397,10 +397,10 @@ function http_security_options_page_html() {
 				$header_string .= '# ' . HTTP_SECURITY_PLUGIN_TITLE . ' settings end';
 				
 				?>
-				<h2 class="nav-tab-wrapper"><a href="?page=http-security&tab=general-options" class="nav-tab"><?php _e('General options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=http-security&tab=csp-options" class="nav-tab"><?php _e('CSP options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=http-security&tab=htaccess" class="nav-tab nav-tab-active"><?php _e('.htaccess', HTTP_SECURITY_PLUGIN_NAME);?></a></h2>
+				<h2 class="nav-tab-wrapper"><a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=general-options" class="nav-tab"><?php _e('General options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=csp-options" class="nav-tab"><?php _e('CSP options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=htaccess" class="nav-tab nav-tab-active"><?php _e('.htaccess', HTTP_SECURITY_PLUGIN_NAME);?></a></h2>
 				<p><?php _e('Some cache plug-ins (e.g. <a href="https://wordpress.org/plugins/cache-enabler/">Cache Enabler</a>) rewrite the HTTP headers. In this case, you may need to have to insert the following content in your .htaccess file. If so, please disable the rewriting of the HTTP headers.', HTTP_SECURITY_PLUGIN_NAME);?></p>
 				<p><?php _e('Make sure to save the settings for the latest version.', HTTP_SECURITY_PLUGIN_NAME);?></p>
-				<label for="<?php echo $options['htaccess']['id'];?>" title="<?php _e($options['htaccess']['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><input name="<?php echo $options['htaccess']['id'];?>" type="checkbox" id="<?php echo $options['htaccess']['id'];?>" value="1" <?php echo $checked;?>/><?php _e($options['htaccess']['label'], HTTP_SECURITY_PLUGIN_NAME);?></label><br/>
+				<label for="<?php echo $httpSecurityOptions['htaccess']['id'];?>" title="<?php _e($httpSecurityOptions['htaccess']['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><input name="<?php echo $httpSecurityOptions['htaccess']['id'];?>" type="checkbox" id="<?php echo $httpSecurityOptions['htaccess']['id'];?>" value="1" <?php echo $checked;?>/><?php _e($httpSecurityOptions['htaccess']['label'], HTTP_SECURITY_PLUGIN_NAME);?></label><br/>
 				<blockquote><textarea name="htaccess" id="htaccess" rows="15" cols="80" readonly <?php echo $disabled;?>><?php echo $header_string;?></textarea></blockquote><?php
 			}
 		

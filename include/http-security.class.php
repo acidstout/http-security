@@ -13,7 +13,6 @@
 
 namespace httpSecurity;
 
-
 class WPAddActionProxy {
 	private $_class = null;
 	private $_func = null;
@@ -58,11 +57,11 @@ class WPAddActionProxy {
 	 * @return void
 	 */
 	public function _copy_main_site_options() {
-		global $options;
+		global $httpSecurityOptions;
 		
 		$multisite_options = array();
 		
-		foreach ($options['general'] as $option) {
+		foreach ($httpSecurityOptions['general'] as $option) {
 			if (isset($option['multisite_compatible']) && $option['multisite_compatible'] === true) {
 				$multisite_options[$option['flag']] = $this->_class->getOption($option['flag']);
 			}
@@ -144,15 +143,19 @@ class WPAddActionProxy {
 		// Register settings
 		foreach ($registerOptions as $entry => $option) {
 			($entry != 'general') ? $entry = HTTP_SECURITY_PLUGIN_NAME . '-' . $entry : $entry = HTTP_SECURITY_PLUGIN_NAME;
-			if (is_array($option)) {
+			//if (is_array($option)) {
 				foreach ($option as $value) {
+					//error_log($entry . ' => ' . $value);
+					
 					register_setting($entry, $value);
 					$this->_class->setOption(str_replace('-', '_', $value));
 				}
+			/*
 			} else {
 				register_setting($entry, $value);
 				$this->_class->setOption(str_replace('-', '_', $value));
 			}
+			*/
 		}
 	}
 }
@@ -163,12 +166,11 @@ class httpSecurity {
 	private $_options = array();
 	private $_registerOptions = array();
 	private $_header_string = false;
+	private $_httpSecurityOptions = array();
 	
 	
 	/**
 	 * Constructor
-	 * 
-	 * @return void
 	 */
 	public function __construct() {
 		$this->_initSettings();
@@ -217,10 +219,8 @@ class httpSecurity {
 	 * @return array
 	 */
 	public function getPluginOptions() {
-		global $options;
-		
 		// General
-		foreach ($options['general'] as $key => $value) {
+		foreach ($this->_httpSecurityOptions['general'] as $key => $value) {
 			if (isset($value['flag'])) {
 				$this->_registerOptions['general'][] = $value['flag'];
 				
@@ -248,7 +248,7 @@ class httpSecurity {
 		}
 		
 		// Content Security Policy
-		foreach ($options['csp'] as $option) {
+		foreach ($this->_httpSecurityOptions['csp'] as $option) {
 			foreach ($option as $entry) {
 				if (isset($entry['id'])) {
 					if (!in_array($entry['id'], $this->_registerOptions)) {
@@ -265,7 +265,7 @@ class httpSecurity {
 		}
 		
 		// htaccess
-		$this->_registerOptions['htaccess'][] = $options['htaccess']['id'];
+		$this->_registerOptions['htaccess'][] = $this->_httpSecurityOptions['htaccess']['id'];
 		
 		return $this->_registerOptions;
 	}
@@ -274,15 +274,13 @@ class httpSecurity {
 	/**
 	 * Get Content Security Policy directives.
 	 *
-	 * @param array $options
+	 * @param array $httpSecurityOptions
 	 * @return string
 	 */
 	public function getCSPDirectives() {
-		global $options;
-		
 		$header_string = '';
 		
-		foreach ($options['csp']['directives'] as $key => $csp_directives) {
+		foreach ($this->_httpSecurityOptions['csp']['directives'] as $key => $csp_directives) {
 			foreach ($csp_directives as $csp_directive) {
 				$value = $this->getOption($csp_directive['id']);
 				
@@ -368,6 +366,11 @@ class httpSecurity {
 	 * @return void
 	 */
 	private function _initSettings() {
+		if (!isset($this->_httpSecurityOptions) || !isset($this->httpSecurityOptions['general'])) {
+			require 'options.inc.php';
+			$this->_httpSecurityOptions = $httpSecurityOptions;
+		}
+		
 		// Generate a list of all available plugin options.
 		$options = $this->getPluginOptions();
 		

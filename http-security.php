@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: HTTP Security
+ * Plugin Name: HTTP Security Lite
  * Description: Use HTTP headers or htaccess file to improve security of a website. Based on the http-security plugin 2.4 by Carl Conrad.
  * Tags: security, HTTP headers, htaccess, HSTS, PKP, HTTPS, CSP, Referrer, X-Frame-Options
- * Version: 2.5.1
+ * Version: 2.5.2
  * Author: Nils Rekow
  * Author URI: https://rekow.ch
  * License: GPL3
@@ -15,10 +15,14 @@ if (!defined('ABSPATH')) {
 
 
 // Define plugin title
-define('HTTP_SECURITY_PLUGIN_TITLE', 'HTTP Security');
+define('HTTP_SECURITY_PLUGIN_TITLE', 'HTTP Security Lite');
 
-// Defines global plugin name in order to easily rename the plugin and its options.
-define('HTTP_SECURITY_PLUGIN_NAME', 'http-security');
+// Use plugin folder as plugin name. Fallback to hard-coded default.
+$lastslashpos = strrpos(__DIR__, DIRECTORY_SEPARATOR);
+$plugin_name = ($lastslashpos !== false) ? substr(__DIR__, $lastslashpos + 1) : 'http-security-lite';
+
+// Defines global plugin name.
+define('HTTP_SECURITY_PLUGIN_NAME', $plugin_name);
 
 // Used to provide proper links to stylesheet and javascript files of the plugin's settings page.
 define('HTTP_SECURITY_PLUGIN_DIR', plugins_url('', __FILE__));
@@ -27,30 +31,36 @@ define('HTTP_SECURITY_PLUGIN_DIR', plugins_url('', __FILE__));
 use httpSecurity\WPAddActionProxy;
 use httpSecurity\httpSecurity;
 
-require_once 'include/options.inc.php';
+require 'include/options.inc.php';
 require_once 'include/http-security.class.php';
+
 
 // Init httpSecurity class
 $httpSecurity = new httpSecurity();
 
-// Add security options to header
-new WPAddActionProxy($httpSecurity, 'send_headers', '_add_header');
 
-
-/**
- * Add actions via proxy if user is in admin panel. 
- */
-if (is_admin()) {
-	require_once 'include/settings.inc.php';
+// Init plugin only if we currently don't uninstall it.
+if (!defined('WP_UNINSTALL_PLUGIN')) {
 	
-	// Add options page
-	new WPAddActionProxy($httpSecurity, 'admin_menu', '_options_page');
+	// Add security options to header
+	new WPAddActionProxy($httpSecurity, 'send_headers', '_add_header');
 	
-	// Register settings
-	new WPAddActionProxy($httpSecurity, 'admin_init', '_register_settings');
 	
-	// Copy options of main site to new multisite
-	if (is_multisite()) {
-		new WPAddActionProxy($httpSecurity, 'wpmu_new_blog', '_copy_main_site_options');
+	/**
+	 * Add actions via proxy if user is in admin panel. 
+	 */
+	if (is_admin()) {
+		require_once 'include/settings.inc.php';
+		
+		// Add options page
+		new WPAddActionProxy($httpSecurity, 'admin_menu', '_options_page');
+		
+		// Register settings
+		new WPAddActionProxy($httpSecurity, 'admin_init', '_register_settings');
+		
+		// Copy options of main site to new multisite
+		if (is_multisite()) {
+			new WPAddActionProxy($httpSecurity, 'wpmu_new_blog', '_copy_main_site_options');
+		}
 	}
 }

@@ -1,10 +1,15 @@
 ## Changes
 
+2.5.2
+* Fixed bug where links stopped working if plugin has been renamed.
+* Fixed uninstall routine.
+* Tested with WordPress 5.1
+
 2.5.1
 * Fixed bug where multiple headers where served as one response.
 * Fixed missing Public-Key-Pinning policy when not using .htaccess file.
 * Added support for Feature-Policy directive.
-* Tested with WordPress 5.0.2
+* Tested with WordPress 5.0.3
 
 2.5.0
 * Complete rewrite of Carl Conrad's plugin from scratch.

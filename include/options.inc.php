@@ -8,7 +8,7 @@
  */
 
 
-$options = array(
+$httpSecurityOptions = array(
 		
 		/* General */
 		'general' => array(
