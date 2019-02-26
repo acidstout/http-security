@@ -311,7 +311,6 @@ class httpSecurity {
 		}
 		
 		if ($this->_header_string) {
-			
 			// Split header into array ...
 			$headers = explode('|', $this->_header_string);
 			
@@ -413,9 +412,9 @@ class httpSecurity {
 			}
 			
 			$header_string = $this->removeTrail($header_string, ';');
+			
+			$header_string .= '|';
 		}
-		
-		$header_string .= '|';
 		
 		
 		// Public-Key-Pinning
@@ -443,10 +442,10 @@ class httpSecurity {
 				}
 				
 				$header_string = $this->removeTrail($header_string, ';');
+			
+				$header_string .= '|';
 			}
 		}
-		
-		$header_string .= '|';
 		
 		
 		// Expect-CT options
@@ -465,9 +464,9 @@ class httpSecurity {
 			}
 		
 			$header_string = $this->removeTrail($header_string, ';');
-		}
 		
-		$header_string .= '|';
+			$header_string .= '|';
+		}
 		
 		
 		// Content-Security-Policy
@@ -481,9 +480,10 @@ class httpSecurity {
 			$header_string .= $this->getCSPDirectives();			
 			
 			$header_string = $this->removeTrail($header_string, ';');
+		
+			$header_string .= '|';
 		}
 		
-		$header_string .= '|';
 		
 		
 		// Feature-Policy
@@ -530,12 +530,11 @@ class httpSecurity {
 				$header_string .= ' vr ' . $this->_options['http_security_feature_policy_vr'] . ';';
 			}
 			
-			
 			$header_string = $this->removeTrail($header_string, ';');
+		
+			$header_string .= '|';
 		}
 
-		$header_string .= '|';
-		
 		
 		// X-Frame options
 		if ($this->_options['http_security_x_frame_flag']) {
@@ -550,28 +549,28 @@ class httpSecurity {
 					$header_string .= 'X-Frame-Options: ALLOW-FROM ' . $this->_options['http_security_x_frame_origin'];
 					break;
 			}
+			
+			$header_string .= '|';
 		}
 		
-		$header_string .= '|';
 		
 		if ($this->_options['http_security_referrer_policy']) {
 			$header_string .= 'Referrer-Policy: ' . $this->_options['http_security_referrer_policy'] . '';
+			$header_string .= '|';
 		}
 		
-		$header_string .= '|';
 		
 		if ($this->_options['http_security_x_xss_protection']) {
 			$header_string .= 'X-XSS-Protection: 1; mode=block';
+			$header_string .= '|';
 		}
-		
-		$header_string .= '|';
 		
 		if ($this->_options['http_security_x_content_type_options']) {
 			$header_string .= 'X-Content-Type-Options: nosniff';
 		}
 		
 		
-		if (defined('WP_DEBUG') && WP_DEBUG) {
+		if (defined('WP_DEBUG') && WP_DEBUG && !empty($header_string)) {
 			error_log($header_string);
 		}
 		

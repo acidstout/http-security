@@ -3,6 +3,7 @@
 2.5.2
 * Fixed bug where links stopped working if plugin has been renamed.
 * Fixed uninstall routine.
+* Don't log empty headers if debug-mode is enabled.
 * Tested with WordPress 5.1
 
 2.5.1
