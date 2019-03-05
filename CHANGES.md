@@ -1,5 +1,8 @@
 ## Changes
 
+2.5.2.1
+* TESTING: Changed order of requirements. This should fix the undefined index error around line 220.
+
 2.5.2
 * Fixed bug where links stopped working if plugin has been renamed.
 * Fixed uninstall routine.

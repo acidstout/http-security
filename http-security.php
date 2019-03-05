@@ -3,7 +3,7 @@
  * Plugin Name: HTTP Security Lite
  * Description: Use HTTP headers or htaccess file to improve security of a website. Based on the http-security plugin 2.4 by Carl Conrad.
  * Tags: security, HTTP headers, htaccess, HSTS, PKP, HTTPS, CSP, Referrer, X-Frame-Options
- * Version: 2.5.2
+ * Version: 2.5.2.1
  * Author: Nils Rekow
  * Author URI: https://rekow.ch
  * License: GPL3
@@ -16,6 +16,9 @@ if (!defined('ABSPATH')) {
 
 // Define plugin title
 define('HTTP_SECURITY_PLUGIN_TITLE', 'HTTP Security Lite');
+
+// Define debug-mode of this plugin. If enabled, the generated header string will be logged.
+define('HSL_DEBUG', false);
 
 // Use plugin folder as plugin name. Fallback to hard-coded default.
 $lastslashpos = strrpos(__DIR__, DIRECTORY_SEPARATOR);
@@ -31,9 +34,7 @@ define('HTTP_SECURITY_PLUGIN_DIR', plugins_url('', __FILE__));
 use httpSecurity\WPAddActionProxy;
 use httpSecurity\httpSecurity;
 
-require 'include/options.inc.php';
 require_once 'include/http-security.class.php';
-
 
 // Init httpSecurity class
 $httpSecurity = new httpSecurity();

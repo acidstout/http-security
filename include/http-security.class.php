@@ -13,6 +13,8 @@
 
 namespace httpSecurity;
 
+require 'options.inc.php';
+
 class WPAddActionProxy {
 	private $_class = null;
 	private $_func = null;
@@ -365,10 +367,8 @@ class httpSecurity {
 	 * @return void
 	 */
 	private function _initSettings() {
-		if (!isset($this->_httpSecurityOptions) || !isset($this->httpSecurityOptions['general'])) {
-			require 'options.inc.php';
-			$this->_httpSecurityOptions = $httpSecurityOptions;
-		}
+		global $httpSecurityOptions;
+		$this->_httpSecurityOptions = $httpSecurityOptions;
 		
 		// Generate a list of all available plugin options.
 		$options = $this->getPluginOptions();
@@ -570,7 +570,7 @@ class httpSecurity {
 		}
 		
 		
-		if (defined('WP_DEBUG') && WP_DEBUG && !empty($header_string)) {
+		if (defined('WP_DEBUG') && WP_DEBUG && defined('HSL_DEBUG') && HSL_DEBUG && !empty($header_string)) {
 			error_log($header_string);
 		}
 		
