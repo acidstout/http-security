@@ -36,8 +36,18 @@ table.http-security-options {
 	
 	table.http-security-options td > select {
 		margin-left: 1em;
+		min-width: 220px;
 	}
 	
 	table.http-security-options td.textarea {
 		vertical-align: top;
+	}
+
+table.nested {
+	width: 100%;
+	max-width: 960px;
+}
+
+	table.nested td:first-child {
+		width: 15em;
 	}

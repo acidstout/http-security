@@ -1,13 +1,13 @@
 <?php
 /**
  * httpSecurity class
- * 
+ *
  * Provides functions to get configured options and modify the header respectively.
  * Also generates preview of required chnages to the .htaccess file if header modification
  * is not desired.
- * 
+ *
  * @author nrekow
- * 
+ *
  */
 
 
@@ -23,7 +23,7 @@ class WPAddActionProxy {
 	
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param object $class
 	 * @param string $tag
 	 * @param string $func
@@ -32,7 +32,7 @@ class WPAddActionProxy {
 		$this->_class = $class;
 		$this->_func = $func;
 		$this->_tag = $tag;
-
+		
 		if (method_exists($this, $this->_func) && !empty($this->_tag)) {
 			// WP add_action() with parameters.
 			add_action($this->_tag, array(&$this, $this->_func));
@@ -43,7 +43,7 @@ class WPAddActionProxy {
 	/**
 	 * Adds security settings to HTTP header by calling the referenced
 	 * method of the supplied class.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function _add_header() {
@@ -98,7 +98,7 @@ class WPAddActionProxy {
 	
 	/**
 	 * Initialize the plugin's options page.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function _options_page() {
@@ -146,18 +146,18 @@ class WPAddActionProxy {
 		foreach ($registerOptions as $entry => $option) {
 			($entry != 'general') ? $entry = HTTP_SECURITY_PLUGIN_NAME . '-' . $entry : $entry = HTTP_SECURITY_PLUGIN_NAME;
 			//if (is_array($option)) {
-				foreach ($option as $value) {
-					//error_log($entry . ' => ' . $value);
-					
-					register_setting($entry, $value);
-					$this->_class->setOption(str_replace('-', '_', $value));
-				}
-			/*
-			} else {
+			foreach ($option as $value) {
+				//error_log($entry . ' => ' . $value);
+				
 				register_setting($entry, $value);
 				$this->_class->setOption(str_replace('-', '_', $value));
 			}
-			*/
+			/*
+			 } else {
+			 register_setting($entry, $value);
+			 $this->_class->setOption(str_replace('-', '_', $value));
+			 }
+			 */
 		}
 	}
 }
@@ -181,7 +181,7 @@ class httpSecurity {
 	
 	/**
 	 * Returns the value of an option
-	 * 
+	 *
 	 * @param string $option
 	 * @return string|boolean
 	 */
@@ -196,7 +196,7 @@ class httpSecurity {
 	
 	/**
 	 * Stores a configured value in options (e.g. fetches value of option and caches it).
-	 * 
+	 *
 	 * @param string $option
 	 * @return void
 	 */
@@ -207,7 +207,7 @@ class httpSecurity {
 	
 	/**
 	 * Returns an array of all available option flags.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getRegisterOptions() {
@@ -304,7 +304,7 @@ class httpSecurity {
 	
 	/**
 	 * Sends the modified header.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function addSecurityHeader() {
@@ -316,7 +316,7 @@ class httpSecurity {
 			// Split header into array ...
 			$headers = explode('|', $this->_header_string);
 			
-			// ... to send all defined header responses. 
+			// ... to send all defined header responses.
 			foreach ($headers as $header) {
 				if (!empty($header)) {
 					header($header);
@@ -336,7 +336,7 @@ class httpSecurity {
 	
 	/**
 	 * Checks if the connection is secured by HTTPS.
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function isSecure() {
@@ -442,7 +442,7 @@ class httpSecurity {
 				}
 				
 				$header_string = $this->removeTrail($header_string, ';');
-			
+				
 				$header_string .= '|';
 			}
 		}
@@ -462,9 +462,9 @@ class httpSecurity {
 			if ($this->_options['http_security_expect_ct_report_uri']) {
 				$header_string .= ' report-uri=' . $this->_options['http_security_expect_ct_report_uri'] . ';';
 			}
-		
+			
 			$header_string = $this->removeTrail($header_string, ';');
-		
+			
 			$header_string .= '|';
 		}
 		
@@ -477,10 +477,10 @@ class httpSecurity {
 			}
 			$header_string .= ': ';
 			
-			$header_string .= $this->getCSPDirectives();			
+			$header_string .= $this->getCSPDirectives();
 			
 			$header_string = $this->removeTrail($header_string, ';');
-		
+			
 			$header_string .= '|';
 		}
 		
@@ -488,53 +488,24 @@ class httpSecurity {
 		
 		// Feature-Policy
 		if ($this->_options['http_security_feature_policy_flag']) {
-			$header_string .= 'Feature-Policy:';
+			$feature_string = 'Feature-Policy:';
 			
-			if ($this->_options['http_security_feature_policy_autoplay']) {
-				$header_string .= ' autoplay ' . $this->_options['http_security_feature_policy_autoplay'] . ';';
-			}
-
-			if ($this->_options['http_security_feature_policy_camera']) {
-				$header_string .= ' camera ' . $this->_options['http_security_feature_policy_camera'] . ';';
-			}
-			
-			if ($this->_options['http_security_feature_policy_document_domain']) {
-				$header_string .= ' document-domain ' . $this->_options['http_security_feature_policy_document_domain'] . ';';
+			foreach ($this->_options as $key => $value) {
+				if (strpos($key, 'http_security_feature_policy_') !== false) {
+					$directive = substr($key, 28);
+					$directive = str_replace('_', '-', $directive);
+					$feature_string .= ' ' . $directive . ' ' . $value . ';';
+				}
 			}
 			
-			if ($this->_options['http_security_feature_policy_encrypted_media']) {
-				$header_string .= ' encrypted-media ' . $this->_options['http_security_feature_policy_encrypted_media'] . ';';
-			}
+			$feature_string = $this->removeTrail($feature_string, ';');
 			
-			if ($this->_options['http_security_feature_policy_fullscreen']) {
-				$header_string .= ' fullscreen ' . $this->_options['http_security_feature_policy_fullscreen'] . ';';
+			if ($feature_string !== 'Feature-Policy:') {
+				$header_string .= $feature_string;
+				$header_string .= '|';
 			}
-			
-			if ($this->_options['http_security_feature_policy_geolocation']) {
-				$header_string .= ' geolocation ' . $this->_options['http_security_feature_policy_geolocation'] . ';';
-			}
-			
-			if ($this->_options['http_security_feature_policy_microphone']) {
-				$header_string .= ' microphone ' . $this->_options['http_security_feature_policy_microphone'] . ';';
-			}
-			
-			if ($this->_options['http_security_feature_policy_midi']) {
-				$header_string .= ' midi ' . $this->_options['http_security_feature_policy_midi'] . ';';
-			}
-			
-			if ($this->_options['http_security_feature_policy_payment']) {
-				$header_string .= ' payment ' . $this->_options['http_security_feature_policy_payment'] . ';';
-			}
-			
-			if ($this->_options['http_security_feature_policy_vr']) {
-				$header_string .= ' vr ' . $this->_options['http_security_feature_policy_vr'] . ';';
-			}
-			
-			$header_string = $this->removeTrail($header_string, ';');
-		
-			$header_string .= '|';
 		}
-
+		
 		
 		// X-Frame options
 		if ($this->_options['http_security_x_frame_flag']) {
@@ -555,7 +526,7 @@ class httpSecurity {
 		
 		
 		if ($this->_options['http_security_referrer_policy']) {
-			$header_string .= 'Referrer-Policy: ' . $this->_options['http_security_referrer_policy'] . '';
+			$header_string .= 'Referrer-Policy: ' . $this->_options['http_security_referrer_policy'];
 			$header_string .= '|';
 		}
 		
@@ -567,8 +538,30 @@ class httpSecurity {
 		
 		if ($this->_options['http_security_x_content_type_options']) {
 			$header_string .= 'X-Content-Type-Options: nosniff';
+			$header_string .= '|';
 		}
 		
+		if ($this->_options['http_security_cors_policy']) {
+			$cors_policy = trim($this->_options['http_security_cors_policy']);
+			if (!empty($cors_policy)) {
+				$header_string .= 'X-Permitted-Cross-Domain-Policies: ' . $cors_policy;
+				$header_string .= '|';
+			}
+		}
+		
+		if ($this->_options['http_security_allow_cors']) {
+			$cors_value = trim($this->_options['http_security_allow_cors']);
+			if (!empty($cors_value)) {
+				$header_string .= 'Access-Control-Allow-Origin: ' . $cors_value;
+				$header_string .= '|';
+				
+				// Check if value is a valid URL. If so, add "Vary: Origin" to header.
+				if (filter_var($cors_value, FILTER_VALIDATE_URL)) {
+					$header_string .= 'Vary: Origin';
+					$header_string .= '|';
+				}
+			}
+		}
 		
 		if (defined('WP_DEBUG') && WP_DEBUG && defined('HSL_DEBUG') && HSL_DEBUG && !empty($header_string)) {
 			error_log($header_string);

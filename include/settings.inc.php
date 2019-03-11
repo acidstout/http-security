@@ -1,7 +1,7 @@
 <?php
 /**
  * WP settings page of plugin
- * 
+ *
  * @author nrekow
  */
 
@@ -87,7 +87,22 @@ function http_security_options_page_html() {
 							switch ($value['type']) {
 								case 'list':
 									foreach ($value['options'] as $entry) {
-										?></tr><tr><td><label for="<?php echo $entry['id'];?>" title="<?php _e($entry['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><input name="<?php echo $entry['id'];?>" type="checkbox" id="<?php echo $entry['id'];?>" value="1" <?php echo checked(1, $httpSecurity->getOption($entry['id']), false);?>/><?php _e($entry['label'], HTTP_SECURITY_PLUGIN_NAME);?></label></td></tr><?php
+										if (isset($entry['type']) && $entry['type'] !== 'checkbox') {
+											?></tr><tr><td>
+												<table class="nested"><tr><td><label for="<?php echo $entry['id'];?>" title="<?php _e($entry['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><?php _e($entry['label'], HTTP_SECURITY_PLUGIN_NAME); ?></label></td><td><?php
+												switch ($entry['type']) {
+													case 'text':
+														?><input name="<?php echo $entry['id'];?>" type="text" id="<?php echo $entry['id'];?>" value="<?php echo $httpSecurity->getOption($entry['id']);?>"/><?php
+														break;
+													case 'textarea':
+														?><textarea name="<?php echo $entry['id'];?>" id="<?php echo $entry['id'];?>"><?php echo $httpSecurity->getOption($entry['id']);?></textarea><?php
+														break;
+												}
+												?></td></tr></table><?php												
+											?></td></tr><?php
+										} else {
+											?></tr><tr><td><label for="<?php echo $entry['id'];?>" title="<?php _e($entry['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><input name="<?php echo $entry['id'];?>" type="checkbox" id="<?php echo $entry['id'];?>" value="1" <?php echo checked(1, $httpSecurity->getOption($entry['id']), false);?>/><?php _e($entry['label'], HTTP_SECURITY_PLUGIN_NAME);?></label></td></tr><?php
+										}
 									}
 									break;
 									
@@ -315,50 +330,24 @@ function http_security_options_page_html() {
 				
 				// Feature-Policy
 				if ($httpSecurity->getOption('http_security_feature_policy_flag')) {
-					$header_string .= 'Header set Feature-Policy: "';
+					$feature_string = 'Feature-Policy: "';
 					
-					if ($httpSecurity->getOption('http_security_feature_policy_autoplay')) {
-						$header_string .= 'autoplay ' . $httpSecurity->getOption('http_security_feature_policy_autoplay') . '; ';
+					foreach ($httpSecurityOptions['general']['Feature-Policy']['options'] as $key => $values) {
+						if (strpos($key, 'http_security_feature_policy_') !== false) {
+							$value = trim($httpSecurity->getOption($key));
+							if (!empty($value)) {
+								$directive = substr($key, 29);
+								$directive = str_replace('_', '-', $directive);
+								$feature_string .= $directive . ' ' . $value . '; ';
+							}
+						}
 					}
 					
-					if ($httpSecurity->getOption('http_security_feature_policy_camera')) {
-						$header_string .= 'camera ' . $httpSecurity->getOption('http_security_feature_policy_camera') . '; ';
-					}
+					$feature_string = $httpSecurity->removeTrail($feature_string, '; ');
 					
-					if ($httpSecurity->getOption('http_security_feature_policy_document_domain')) {
-						$header_string .= 'document-domain ' . $httpSecurity->getOption('http_security_feature_policy_document_domain') . '; ';
+					if ($feature_string !== 'Feature-Policy: "') {
+						$header_string .= 'Header set ' . $feature_string . '"' . "\n";
 					}
-					
-					if ($httpSecurity->getOption('http_security_feature_policy_encrypted_media')) {
-						$header_string .= 'encrypted-media ' . $httpSecurity->getOption('http_security_feature_policy_encrypted_media') . '; ';
-					}
-					
-					if ($httpSecurity->getOption('http_security_feature_policy_fullscreen')) {
-						$header_string .= 'fullscreen ' . $httpSecurity->getOption('http_security_feature_policy_fullscreen') . '; ';
-					}
-					
-					if ($httpSecurity->getOption('http_security_feature_policy_geolocation')) {
-						$header_string .= 'geolocation ' . $httpSecurity->getOption('http_security_feature_policy_geolocation') . '; ';
-					}
-					
-					if ($httpSecurity->getOption('http_security_feature_policy_microphone')) {
-						$header_string .= 'microphone ' . $httpSecurity->getOption('http_security_feature_policy_microphone') . '; ';
-					}
-					
-					if ($httpSecurity->getOption('http_security_feature_policy_midi')) {
-						$header_string .= 'midi ' . $httpSecurity->getOption('http_security_feature_policy_midi') . '; ';
-					}
-					
-					if ($httpSecurity->getOption('http_security_feature_policy_payment')) {
-						$header_string .= 'payment ' . $httpSecurity->getOption('http_security_feature_policy_payment') . '; ';
-					}
-					
-					if ($httpSecurity->getOption('http_security_feature_policy_vr')) {
-						$header_string .= 'vr ' . $httpSecurity->getOption('http_security_feature_policy_vr') . '; ';
-					}
-					
-					$header_string = $httpSecurity->removeTrail($header_string, '; ');
-					$header_string .= '"' . "\n";
 				}
 				
 				// X-Frame-Options
@@ -396,8 +385,7 @@ function http_security_options_page_html() {
 				
 				$header_string .= '# ' . HTTP_SECURITY_PLUGIN_TITLE . ' settings end';
 				
-				?>
-				<h2 class="nav-tab-wrapper"><a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=general-options" class="nav-tab"><?php _e('General options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=csp-options" class="nav-tab"><?php _e('CSP options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=htaccess" class="nav-tab nav-tab-active"><?php _e('.htaccess', HTTP_SECURITY_PLUGIN_NAME);?></a></h2>
+				?><h2 class="nav-tab-wrapper"><a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=general-options" class="nav-tab"><?php _e('General options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=csp-options" class="nav-tab"><?php _e('CSP options', HTTP_SECURITY_PLUGIN_NAME);?></a> <a href="?page=<?php echo HTTP_SECURITY_PLUGIN_NAME;?>&tab=htaccess" class="nav-tab nav-tab-active"><?php _e('.htaccess', HTTP_SECURITY_PLUGIN_NAME);?></a></h2>
 				<p><?php _e('Some cache plug-ins (e.g. <a href="https://wordpress.org/plugins/cache-enabler/">Cache Enabler</a>) rewrite the HTTP headers. In this case, you may need to have to insert the following content in your .htaccess file. If so, please disable the rewriting of the HTTP headers.', HTTP_SECURITY_PLUGIN_NAME);?></p>
 				<p><?php _e('Make sure to save the settings for the latest version.', HTTP_SECURITY_PLUGIN_NAME);?></p>
 				<label for="<?php echo $httpSecurityOptions['htaccess']['id'];?>" title="<?php _e($httpSecurityOptions['htaccess']['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><input name="<?php echo $httpSecurityOptions['htaccess']['id'];?>" type="checkbox" id="<?php echo $httpSecurityOptions['htaccess']['id'];?>" value="1" <?php echo $checked;?>/><?php _e($httpSecurityOptions['htaccess']['label'], HTTP_SECURITY_PLUGIN_NAME);?></label><br/>

@@ -1,5 +1,11 @@
 ## Changes
 
+2.5.3
+* Added Access-Control-Allow-Origin (CORS) directive.
+* Added X-Permitted-Cross-Domain-Policies directive.
+* Added missing Feature-Policy directives (e.g. accelerometer, gyroscope, ...).
+* Improved header and .htaccess generation when using feature policies. 
+
 2.5.2.1
 * TESTING: Changed order of requirements. This should fix the undefined index error around line 220.
 

@@ -110,6 +110,18 @@ $httpSecurityOptions = array(
 						'description' => 'The HTTP Feature-Policy header provides a mechanism to allow and deny the use of browser features in its own frame, and in iframes that it embeds.',
 						'extended_description' => ' For a complete description of these parameters, please refer to <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy" rel="noopener" target="_blank">Feature-Policy</a> on the Mozilla Developer Network.',
 						'options' => array(
+								'http_security_feature_policy_accelerometer' => array(
+										'label' => 'accelerometer',
+										'description' => '',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_ambient_light_sensor' => array(
+										'label' => 'ambient-light-sensor',
+										'description' => '',
+										'type' => 'text',
+										'size' => 80
+								),
 								'http_security_feature_policy_autoplay' => array(
 										'label' => 'autoplay',
 										'description' => 'Controls whether the current document is allowed to autoplay media.',
@@ -142,7 +154,31 @@ $httpSecurityOptions = array(
 								),
 								'http_security_feature_policy_geolocation' => array(
 										'label' => 'geolocation',
-										'description' => 'Controls whether the current document is allowed to use the Geolocation Interface.',
+										'description' => 'Controls whether the current document is allowed to use the geolocation interface.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_gyroscope' => array(
+										'label' => 'gyroscope',
+										'description' => 'Controls whether the current document is allowed to use the gyroscope interface.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_layout_animations' => array(
+										'label' => 'layout-animations',
+										'description' => '(not supported yet)',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_legacy_image_formats' => array(
+										'label' => 'legacy-image-formats',
+										'description' => '',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_magnetometer' => array(
+										'label' => 'magnetometer',
+										'description' => 'Controls whether the current document is allowed to use the magnetometer interface.',
 										'type' => 'text',
 										'size' => 80
 								),
@@ -158,9 +194,57 @@ $httpSecurityOptions = array(
 										'type' => 'text',
 										'size' => 80
 								),
+								'http_security_feature_policy_oversized_images' => array(
+										'label' => 'oversized-images',
+										'description' => 'Allows developers to selectively enable and disable the use of images whose sizes that are much bigger than the containers\' through the Feature-Policy HTTP header or the <iframe> \'allow\' attribute. This provides more control over images with unnecessarily large intrinsic size, on a per-origin basis. Use this policy to improve image loading performance. The identifier for the feature in policies is \'oversized-images\'. By default, \'oversized-images\' is allowed in all frames.',
+										'type' => 'text',
+										'size' => 80
+								),
 								'http_security_feature_policy_payment' => array(
 										'label' => 'payment',
 										'description' => 'Controls whether the current document is allowed to use the Payment Request API.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_picture_in_picture' => array(
+										'label' => 'picture-in-picture',
+										'description' => '(not supported yet)',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_speaker' => array(
+										'label' => 'speaker',
+										'description' => 'Controls whether the current document is allowed to use the speaker interface.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_sync_xhr' => array(
+										'label' => 'sync-xhr',
+										'description' => '',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_unoptimized_images' => array(
+										'label' => 'unoptimized-images',
+										'description' => '',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_unsized_media' => array(
+										'label' => 'unsized-media',
+										'description' => '',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_usb' => array(
+										'label' => 'usb',
+										'description' => 'Controls whether the current document is allowed to use the USB interface.',
+										'type' => 'text',
+										'size' => 80
+								),
+								'http_security_feature_policy_vibrate' => array(
+										'label' => 'vibrate',
+										'description' => 'Controls whether the current document is allowed to use the vibrate interface.',
 										'type' => 'text',
 										'size' => 80
 								),
@@ -202,6 +286,21 @@ $httpSecurityOptions = array(
 										'type' => 'text',
 										'size' => 80
 								)
+						)
+				),
+				'X-Permitted-Cross-Domain-Policies' => array(
+						'id' => 'http_security_cors_policy',
+						'flag' => 'http_security_cors_policy',
+						'label' => 'Cross domain policy:',
+						'description' => 'none: No policy files are allowed anywhere on the target server, including this master policy file. master-only: Only this master policy file is allowed. by-content-type: [HTTP/HTTPS only] Only policy files served with Content-Type: text/x-cross-domain-policy are allowed. by-ftp-filename: [FTP only] Only policy files whose file names are crossdomain.xml (i.e. URLs ending in /crossdomain.xml) are allowed. all: All policy files on this target domain are allowed.',
+						'type' => 'select',
+						'options' => array(
+								'',
+								'none',
+								'master-only',
+								'by-content-type',
+								'by-ftp-filename',
+								'all'
 						)
 				),
 				'Referrer policy' => array(
@@ -248,6 +347,13 @@ $httpSecurityOptions = array(
 										'description' => 'Removes the WordPress version information from the HTML head section.',
 										'label' => 'Remove WordPress version information from header',
 										'multisite_compatible' => true
+								),
+								array(
+										'id' => 'http_security_allow_cors',
+										'description' => 'The Access-Control-Allow-Origin response header indicates whether the response can be shared with requesting code from the given origin. Possible values are \'*\', \'null\' or any URL. You should avoid using \'null\', because it allows data: and file: protocols to be used, which can be dangerous.',
+										'label' => 'Access-Control-Allow-Origin',
+										'multisite_compatible' => false,
+										'type' => 'text'
 								)
 						)
 				)
@@ -290,12 +396,14 @@ $httpSecurityOptions = array(
 						),
 						'navigation' => array(
 								array('id' => 'http_security_csp_form_action',					'label' => 'form-action',				'description' => 'The form-action directive restricts the URLs which can be used as the target of a form submissions from a given context.'),
-								array('id' => 'http_security_csp_frame_ancestors',				'label' => 'frame-ancestors',			'description' => 'The frame-ancestors directive specifies valid parents that may embed a page using <frame>, <iframe>, <object>, <embed>, or <applet>.'),
+								array('id' => 'http_security_csp_frame_ancestors',				'label' => 'frame-ancestors',			'description' => 'The frame-ancestors directive specifies valid parents that may embed a page using <frame>, <iframe>, <object>, <embed>, or <applet>.')
 						),
 						'other' => array(
 								array('id' => 'http_security_csp_block_all_mixed_content',		'label' => 'block-all-mixed-content',	'description' => 'The block-all-mixed-content directive prevents loading any assets using HTTP when the page is loaded using HTTPS. All mixed content resource requests are blocked, including both active and passive mixed content. This also applies to <iframe> documents, ensuring the entire page is mixed content free. The upgrade-insecure-requests directive is evaluated before block-all-mixed-content and If the former is set, the latter is effectively a no-op. It is recommended to set one directive or the other – not both.',	'type' => 'checkbox'),
 								array('id' => 'http_security_csp_require_sri_for',				'label' => 'require-sri-for',			'description' => 'The require-sri-for directive instructs the client to require the use of Subresource Integrity for scripts or styles on the page.'),
 								array('id' => 'http_security_csp_upgrade_insecure_requests',	'label' => 'upgrade-insecure-requests',	'description' => 'The upgrade-insecure-requests directive instructs user agents to treat all of a site\'s insecure URLs (those served over HTTP) as though they have been replaced with secure URLs (those served over HTTPS). This directive is intended for web sites with large numbers of insecure legacy URLs that need to be rewritten. The upgrade-insecure-requests directive is evaluated before block-all-mixed-content and if it is set, the latter is effectively a no-op. It is recommended to set one directive or the other, but not both. The upgrade-insecure-requests directive will not ensure that users visiting your site via links on third-party sites will be upgraded to HTTPS for the top-level navigation and thus does not replace the Strict-Transport-Security (HSTS) header, which should still be set with an appropriate max-age to ensure that users are not subject to SSL stripping attacks.',	'type' => 'checkbox'),
+								array('id' => 'http_security_csp_referrer',						'label' => 'referrer',					'description' => 'Define information user agent must send in Referer header.'),
+								array('id' => 'http_security_csp_report_to',					'label' => 'report-to',					'description' => 'Specifies a group (defined in Report-To header) to which the user agent sends reports about policy violation.')
 						)
 				)
 		),
