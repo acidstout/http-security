@@ -1,5 +1,8 @@
 ## Changes
 
+2.5.3.1
+* TESTING: Changed the way options.in.php is included. This should fix the undefined index error around line 220, finally.
+
 2.5.3
 * Added Access-Control-Allow-Origin (CORS) directive.
 * Added X-Permitted-Cross-Domain-Policies directive.

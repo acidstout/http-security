@@ -13,8 +13,6 @@
 
 namespace httpSecurity;
 
-require 'options.inc.php';
-
 class WPAddActionProxy {
 	private $_class = null;
 	private $_func = null;
@@ -148,16 +146,15 @@ class WPAddActionProxy {
 			//if (is_array($option)) {
 			foreach ($option as $value) {
 				//error_log($entry . ' => ' . $value);
-				
 				register_setting($entry, $value);
 				$this->_class->setOption(str_replace('-', '_', $value));
 			}
 			/*
-			 } else {
-			 register_setting($entry, $value);
-			 $this->_class->setOption(str_replace('-', '_', $value));
-			 }
-			 */
+			} else {
+			register_setting($entry, $value);
+			$this->_class->setOption(str_replace('-', '_', $value));
+			}
+			*/
 		}
 	}
 }
@@ -175,6 +172,8 @@ class httpSecurity {
 	 * Constructor
 	 */
 	public function __construct() {
+		require 'options.inc.php';
+		$this->_httpSecurityOptions = getHttpSecurityOptions(); 
 		$this->_initSettings();
 	}
 	
@@ -367,9 +366,6 @@ class httpSecurity {
 	 * @return void
 	 */
 	private function _initSettings() {
-		global $httpSecurityOptions;
-		$this->_httpSecurityOptions = $httpSecurityOptions;
-		
 		// Generate a list of all available plugin options.
 		$options = $this->getPluginOptions();
 		

@@ -3,7 +3,7 @@
  * Plugin Name: HTTP Security Lite
  * Description: Use HTTP headers or htaccess file to improve security of a website. Based on the http-security plugin 2.4 by Carl Conrad.
  * Tags: security, HTTP headers, htaccess, HSTS, PKP, HTTPS, CSP, Referrer, X-Frame-Options
- * Version: 2.5.3
+ * Version: 2.5.3.1
  * Author: Nils Rekow
  * Author URI: https://rekow.ch
  * License: GPL3
