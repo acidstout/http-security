@@ -1,5 +1,8 @@
 ## Changes
 
+2.5.3.2
+* Fixed issue where settings page would not load.
+
 2.5.3.1
 * TESTING: Changed the way options.in.php is included. This should fix the undefined index error around line 220, finally.
 
