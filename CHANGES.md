@@ -1,5 +1,8 @@
 ## Changes
 
+2.5.3.3
+* Fixed call to undefined function upon very first plugin activation. 
+
 2.5.3.2
 * Fixed issue where settings page would not load.
 

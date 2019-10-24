@@ -11,8 +11,7 @@
  */
 function http_security_options_page_html() {
 	global $httpSecurity;
-	
-	$httpSecurityOptions = getHttpSecurityOptions();
+	global $httpSecurityOptions;
 	
 	if (!current_user_can('manage_options')) {
 		wp_die(__('You do not have sufficient permissions to access this page.', HTTP_SECURITY_PLUGIN_NAME));
