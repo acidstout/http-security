@@ -1,4 +1,6 @@
 ## Changes
+2.5.3.4-test
+* Changed way to get configured options.
 
 2.5.3.3
 * Fixed call to undefined function upon very first plugin activation. 

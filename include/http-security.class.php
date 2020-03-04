@@ -13,6 +13,8 @@
 
 namespace httpSecurity;
 
+require 'options.inc.php';
+
 class WPAddActionProxy {
 	private $_class = null;
 	private $_func = null;
@@ -172,7 +174,6 @@ class httpSecurity {
 	 * Constructor
 	 */
 	public function __construct() {
-		require 'options.inc.php';
 		$this->_httpSecurityOptions = getHttpSecurityOptions(); 
 		$this->_initSettings();
 	}
