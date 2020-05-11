@@ -1,4 +1,10 @@
 ## Changes
+2.5.6.1
+* Bumped version number in order to keep track with the original plugin.
+
+2.5.3.5
+* Added escaping to settings values
+
 2.5.3.4-test
 * Changed way to get configured options.
 

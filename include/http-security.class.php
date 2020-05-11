@@ -185,9 +185,12 @@ class httpSecurity {
 	 * @param string $option
 	 * @return string|boolean
 	 */
-	public function getOption($option) {
+	public function getOption($option, $escape = false) {
 		if (isset($this->_options[$option])) {
-			return $this->_options[$option];
+			if ($escape === false) {
+				return $this->_options[$option];
+			}
+			return esc_html( $this->_options[$option]);
 		}
 		
 		return false;

@@ -93,10 +93,10 @@ function http_security_options_page_html() {
 												<table class="nested"><tr><td><label for="<?php echo $entry['id'];?>" title="<?php _e($entry['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><?php _e($entry['label'], HTTP_SECURITY_PLUGIN_NAME); ?></label></td><td><?php
 												switch ($entry['type']) {
 													case 'text':
-														?><input name="<?php echo $entry['id'];?>" type="text" id="<?php echo $entry['id'];?>" value="<?php echo $httpSecurity->getOption($entry['id']);?>"/><?php
+														?><input name="<?php echo $entry['id'];?>" type="text" id="<?php echo $entry['id'];?>" value="<?php echo $httpSecurity->getOption($entry['id'], true);?>"/><?php
 														break;
 													case 'textarea':
-														?><textarea name="<?php echo $entry['id'];?>" id="<?php echo $entry['id'];?>"><?php echo $httpSecurity->getOption($entry['id']);?></textarea><?php
+														?><textarea name="<?php echo $entry['id'];?>" id="<?php echo $entry['id'];?>"><?php echo $httpSecurity->getOption($entry['id'], true);?></textarea><?php
 														break;
 												}
 												?></td></tr></table><?php												
@@ -110,7 +110,7 @@ function http_security_options_page_html() {
 								case 'select':
 									?><td><select id="<?php echo $value['id'];?>" name="<?php echo $value['id'];?>"><?php
 									foreach ($value['options'] as $entry) {
-										?><option value="<?php echo $entry;?>" <?php echo selected($entry, $httpSecurity->getOption($value['id']), false);?>><?php echo $entry;?></option><?php
+										?><option value="<?php echo $entry;?>" <?php selected($entry, $httpSecurity->getOption($value['id']));?>><?php echo $entry;?></option><?php
 									}
 									?></select></td></tr><?php
 									break;
@@ -166,18 +166,18 @@ function http_security_options_page_html() {
 									$class = '';
 									switch ($entry_value['type']) {
 										case 'textarea':
-											?><td class="textarea"><label for="<?php echo $entry_key;?>" title="<?php _e($entry_value['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><?php echo $input_pre_label;?></label></td><td><textarea id="<?php echo $entry_key;?>" name="<?php echo $input_name;?>"><?php echo $input_value;?></textarea><?php
+											?><td class="textarea"><label for="<?php echo $entry_key;?>" title="<?php _e($entry_value['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><?php echo $input_pre_label;?></label></td><td><textarea id="<?php echo $entry_key;?>" name="<?php echo $input_name;?>"><?php echo esc_html($input_value);?></textarea><?php
 											break;
 										case 'age':
 											$class=' class="age"';
 											$entry_value['type'] = 'text';
 										case 'text':
-											?><td class="text"><label for="<?php echo $entry_key;?>" title="<?php _e($entry_value['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><?php echo $input_pre_label;?></label></td><td><input<?php echo $class;?> name="<?php echo $input_name;?>" id="<?php echo $entry_key;?>" type="<?php echo $entry_value['type'];?>" value="<?php echo $input_value;?>" placeholder="<?php echo $input_placeholder;?>" <?php echo $input_size. ' ' . $input_attr;?>/><?php echo $input_post_label;?><?php
+											?><td class="text"><label for="<?php echo $entry_key;?>" title="<?php _e($entry_value['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><?php echo $input_pre_label;?></label></td><td><input<?php echo $class;?> name="<?php echo $input_name;?>" id="<?php echo $entry_key;?>" type="<?php echo $entry_value['type'];?>" value="<?php echo esc_html($input_value);?>" placeholder="<?php echo $input_placeholder;?>" <?php echo $input_size. ' ' . $input_attr;?>/><?php echo $input_post_label;?><?php
 											break;
 										case 'checkbox':
 											$colspan = ' colspan="2"';
 										default:
-											?><td<?php echo $colspan;?>><label for="<?php echo $entry_key;?>" title="<?php _e($entry_value['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><?php echo $input_pre_label;?><input name="<?php echo $input_name;?>" id="<?php echo $entry_key;?>" type="<?php echo $entry_value['type'];?>" value="<?php echo $input_value;?>" placeholder="<?php echo $input_placeholder;?>" <?php echo $input_size. ' ' . $input_attr;?>/><?php echo $input_post_label;?></label><?php
+											?><td<?php echo $colspan;?>><label for="<?php echo $entry_key;?>" title="<?php _e($entry_value['description'], HTTP_SECURITY_PLUGIN_NAME);?>"><?php echo $input_pre_label;?><input name="<?php echo $input_name;?>" id="<?php echo $entry_key;?>" type="<?php echo $entry_value['type'];?>" value="<?php echo esc_html($input_value);?>" placeholder="<?php echo $input_placeholder;?>" <?php echo $input_size. ' ' . $input_attr;?>/><?php echo $input_post_label;?></label><?php
 											if ($colspan == '') {
 												?></td><td><?php
 											}
@@ -222,7 +222,7 @@ function http_security_options_page_html() {
 								
 								?><tr class="http_security_csp_options" title="<?php _e($csp_directive['description'], HTTP_SECURITY_PLUGIN_NAME);?>">
 									<td><label for="<?php echo $csp_directive['id'];?>"><?php _e($csp_directive['label'], HTTP_SECURITY_PLUGIN_NAME);?></label></td>
-									<td><input name="<?php echo $csp_directive['id'];?>" id="<?php echo $csp_directive['id'];?>" type="<?php echo $input_type;?>" value="<?php echo $input_value;?>" <?php echo $input_attr;?> size="80"/></td>
+									<td><input name="<?php echo $csp_directive['id'];?>" id="<?php echo $csp_directive['id'];?>" type="<?php echo $input_type;?>" value="<?php echo esc_html($input_value);?>" <?php echo $input_attr;?> size="80"/></td>
 								</tr><?php
 							}
 						}?>
